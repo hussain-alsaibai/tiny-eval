@@ -2,10 +2,10 @@
 
 > **Zero-dependency agent evaluation framework.** Define benchmark suites, grade agent runs, track regressions over time. MIT.
 
-[![PyPI](https://img.shields.io/pypi/v/tiny-eval.svg)](https://pypi.org/project/tiny-eval/)
-[![Python](https://img.shields.io/pypi/pyversions/tiny-eval.svg)](https://pypi.org/project/tiny-eval/)
+[![Install from GitHub](https://img.shields.io/badge/install-git%2Bhttps-blue)](https://github.com/hussain-alsaibai/tiny-eval#install)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://github.com/hussain-alsaibai/tiny-eval#install)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Zero deps](https://img.shields.io/badge/dependencies-0-brightgreen)](https://pypi.org/project/tiny-eval/)
+[![Zero deps](https://img.shields.io/badge/dependencies-0-brightgreen)](https://github.com/hussain-alsaibai/tiny-eval#install)
 
 ## Why?
 
