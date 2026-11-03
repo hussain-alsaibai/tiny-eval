@@ -20,4 +20,4 @@ jobs:
       - name: Install
         run: pip install -e . pytest
       - name: Unit tests
-        run: python -m pytest test_tiny_eval.py -v
+        run: python -m pytest test_tiny_eval.py test_tiny_eval_v100.py -v

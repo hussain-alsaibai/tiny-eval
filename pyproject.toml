@@ -34,4 +34,4 @@ Repository = "https://github.com/hussain-alsaibai/tiny-eval"
 Issues = "https://github.com/hussain-alsaibai/tiny-eval/issues"
 
 [tool.setuptools]
-py-modules = ["tiny_eval"]
+py-modules = ["tiny_eval", "tiny_eval_v100"]
