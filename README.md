@@ -32,49 +32,28 @@ curl -O https://raw.githubusercontent.com/hussain-alsaibai/tiny-eval/main/tiny_e
 ## Quickstart
 
 ```python
-from tiny_eval import EvalSuite, EvalCase, evaluate
+from tiny_eval_v100 import EvalSuite, Criterion
 
-# ── Option 1: Full suite ──────────────────────────────────────
 suite = EvalSuite(
-    name="bug-fix",
-    version="1.0.0",
-    threshold=0.7,
-    description="Agent must fix bugs without crashing",
-    cases=[
-        EvalCase(
-            "no_crash",
-            "Must not crash on valid input",
-            input_fn=lambda: "Write a hello world in Python",
-            expected_fn=lambda out: 1.0 if out and not out.get("crashed") else 0.0,
-            tags=["safety"],
-        ),
-        EvalCase(
-            "has_output",
-            "Must return non-empty result",
-            input_fn=lambda: "Return the string 'hello'",
-            expected_fn=lambda out: 1.0 if out and str(out).strip() else 0.0,
-            tags=["correctness"],
-        ),
-    ],
-)
-
-# Your agent: fn(prompt) -> output
-def my_agent(prompt: str):
-    return {"response": "hello", "crashed": False}
-
-run = suite.run(my_agent, agent_info={"model": "gpt-4o", "version": "2.0"})
-print(run.summary())
-# ✅ PASS | bug-fix@1.0.0 | 2/2 cases | 100% | score 2.0/2.0 | 45ms
-
-# ── Option 2: Ad-hoc evaluate() ──────────────────────────────
-result = evaluate(
-    my_agent,
+    "bug-fix",
     [
-        ("no_crash", "Must not crash", lambda o: 1.0 if o else 0.0),
-        ("has_content", "Must return content", lambda o: 1.0 if str(o).strip() else 0.0),
+        Criterion("no_crash",   "Must not crash on valid input",
+                  lambda ctx: not ctx.get("crashed")),
+        Criterion("has_output", "Must return a non-empty result",
+                  lambda ctx: bool(str(ctx.get("response", "")).strip())),
     ],
+    pass_threshold=0.7,
 )
-print(result.summary())
+
+# `context` is whatever your agent produced for this run
+result = suite.evaluate(
+    agent_name="my-agent",
+    run_id="run-001",
+    context={"response": "hello", "crashed": False},
+)
+
+print(result.grade)          # Grade.PASS
+print(result.overall_score)  # 1.0
 ```
 
 ## Features
@@ -93,21 +72,20 @@ print(result.summary())
 ## Regression Tracking
 
 ```python
-from tiny_eval import EvalSuite, EvalCase, RegressionTracker
+from tiny_eval import RegressionTracker
 
 tracker = RegressionTracker("runs.json")
 
-# Run your agent
-run = suite.run(my_agent)
-tracker.record(run)
+# `result` is a SuiteResult produced by a suite run
+tracker.record("bug-fix", result, baseline=True)
 
-# Check for regression
-best = tracker.best("bug-fix")
-print(f"Best score: {best.total_score:.1f}")
+# Later: has the score dropped more than 5%?
+regressed = tracker.check_regression("bug-fix", result, drop_threshold=0.05)
+print("regressed:", regressed)
 
-# History
-for r in tracker.history("bug-fix"):
-    print(f"  {r.timestamp} -> {r.total_score:.1f} ({'PASS' if r.passed else 'FAIL'})")
+best = tracker.get_baseline("bug-fix")
+for run in tracker.get_runs("bug-fix", limit=5):
+    print(" ", run)
 ```
 
 ### CI Gate Pattern
