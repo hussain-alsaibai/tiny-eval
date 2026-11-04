@@ -8,6 +8,8 @@ This demonstrates:
 4. Using RegressionReport to surface specific failures
 """
 
+from __future__ import annotations
+
 import json
 from datetime import datetime, timezone
 from pathlib import Path
